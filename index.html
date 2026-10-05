@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>METASO | Premium Store</title>
+    
+    <!-- Premium Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function(){ emailjs.init("aa0cQyEi_HczhBfmk"); })();
+    </script>
+
+    <style>
+        /* --- GLOBAL CSS & ANIMATIONS --- */
+        :root {
+            --teal: #063F47;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-light: #e2e8f0;
+            --text-white: #ffffff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            color: var(--text-white);
+            overflow-x: hidden; 
+            background: linear-gradient(-45deg, #021215, #063F47, #010a0c, #03252a);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            min-height: 100vh;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        html { scroll-behavior: smooth; }
+
+        /* --- LIQUID GLASS NAVBAR --- */
+        .navbar { 
+            background: rgba(6, 63, 71, 0.2); 
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 15px 20px; 
+            position: fixed; 
+            width: 100%; 
+            top: 0; 
+            z-index: 100; 
+        }
+
+        .nav-content { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+
+        .menu-icon { font-size: 24px; color: var(--text-white); cursor: pointer; transition: 0.3s; }
+        
+        .brand { display: flex; align-items: center; gap: 15px; }
+        .brand-logo { width: 45px; height: 45px; border-radius: 12px; object-fit: cover; border: 1px solid rgba(255,255,255,0.3); }
+        .brand-name { font-family: 'Cinzel', serif; font-size: 28px; font-weight: 700; letter-spacing: 2px; }
+
+        /* --- SEARCH BAR WITH SUGGESTIONS --- */
+        .search-container { position: relative; width: 100%; max-width: 350px; }
+        .search-box {
+            width: 100%; padding: 10px 40px 10px 20px;
+            border-radius: 30px; border: 1px solid var(--glass-border);
+            background: rgba(0, 0, 0, 0.2); color: white;
+            backdrop-filter: blur(10px); outline: none;
+            font-family: 'Poppins', sans-serif; transition: 0.3s;
+        }
+        .search-box:focus { border-color: rgba(255,255,255,0.5); background: rgba(0,0,0,0.4); }
+        .search-icon { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,0.6); }
+        
+        .suggestions-glass {
+            position: absolute; top: 110%; left: 0; width: 100%;
+            background: rgba(6, 63, 71, 0.6); backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border); border-radius: 15px;
+            max-height: 250px; overflow-y: auto; display: none; z-index: 101;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .suggestions-glass.active { display: block; }
+        .suggestion-item {
+            padding: 12px 20px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05);
+            display: flex; align-items: center; gap: 10px; font-size: 14px;
+        }
+        .suggestion-item:hover { background: rgba(255,255,255,0.1); }
+        .suggestion-item i { color: rgba(255,255,255,0.5); }
+
+        /* --- LEFT SIDE MENU --- */
+        .side-menu { 
+            position: fixed; top: 0; left: -320px; 
+            width: 300px; height: 100vh; 
+            background: rgba(2, 20, 25, 0.85); 
+            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            border-right: 1px solid var(--glass-border);
+            box-shadow: 5px 0 30px rgba(0,0,0,0.3); z-index: 1001; 
+            transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; 
+        }
+        .side-menu.active { left: 0; }
+        .menu-header { display: flex; justify-content: space-between; align-items: center; padding: 25px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .close-menu { font-size: 24px; cursor: pointer; color: var(--text-light); transition: 0.3s; }
+        .close-menu:hover { color: #ff4757; transform: rotate(90deg); }
+        .menu-links { list-style: none; padding: 20px; display: flex; flex-direction: column; gap: 20px; }
+        .menu-links a { text-decoration: none; color: var(--text-light); font-size: 18px; display: flex; align-items: center; gap: 15px; transition: 0.3s; }
+        .menu-links a:hover { color: white; padding-left: 10px; }
+
+        .menu-overlay { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.4); z-index: 1000; opacity: 0; visibility: hidden; 
+            transition: 0.3s; backdrop-filter: blur(4px); 
+        }
+        .menu-overlay.active { opacity: 1; visibility: visible; }
+
+        /* --- HERO & PRODUCTS --- */
+        .hero { margin-top: 100px; text-align: center; padding: 20px; }
+        .hero h2 { font-family: 'Cinzel', serif; font-size: 42px; font-weight: 700; margin-bottom: 5px; text-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+        .hero p { font-size: 14px; opacity: 0.8; letter-spacing: 1px; }
+
+        .container { max-width: 1200px; margin: 30px auto 60px; padding: 0 20px; }
+        
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
+
+        /* Glassmorphism Product Cards */
+        .product-card { 
+            background: var(--glass-bg); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border); border-radius: 24px; padding: 20px; 
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2); transition: 0.4s ease; display: flex; flex-direction: column; 
+        }
+        .product-card:hover { transform: translateY(-10px); background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); }
+        .product-image { width: 100%; height: 260px; border-radius: 16px; object-fit: cover; margin-bottom: 20px; transition: 0.5s ease; }
+        .product-card:hover .product-image { transform: scale(1.02); }
+        
+        .product-info { flex-grow: 1; display: flex; flex-direction: column; }
+        .product-title { font-size: 19px; font-weight: 600; margin-bottom: 8px; color: white; }
+        .product-desc { font-size: 13px; color: var(--text-light); margin-bottom: 20px; line-height: 1.6; flex-grow: 1; }
+        .price-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .product-price { font-size: 22px; font-weight: 700; color: #4ae0c0; }
+        
+        .order-btn { 
+            background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255,255,255,0.2);
+            color: #fff; padding: 14px; border-radius: 14px; font-size: 15px; font-weight: 600; cursor: pointer; 
+            transition: 0.3s; width: 100%; backdrop-filter: blur(5px);
+        }
+        .order-btn:hover { background: rgba(255, 255, 255, 0.2); transform: translateY(-2px); }
+
+        /* --- GLASS MODAL --- */
+        .modal-overlay { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(10px); 
+            display: flex; justify-content: center; align-items: center; 
+            z-index: 1000; opacity: 0; visibility: hidden; transition: 0.4s; 
+        }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+        .modal-content { 
+            background: rgba(6, 63, 71, 0.3); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border); width: 90%; max-width: 450px; border-radius: 24px; padding: 30px; 
+            transform: scale(0.8) translateY(50px); opacity: 0; transition: 0.5s; box-shadow: 0 20px 60px rgba(0,0,0,0.5); 
+        }
+        .modal-overlay.active .modal-content { transform: scale(1) translateY(0); opacity: 1; }
+
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; }
+        .close-btn { background: rgba(255,255,255,0.1); border: 1px solid transparent; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; color: white; transition: 0.3s; }
+        .close-btn:hover { background: #ef4444; }
+
+        .input-group { position: relative; margin-bottom: 18px; }
+        .input-group i { position: absolute; left: 16px; top: 15px; color: var(--text-light); }
+        .input-group input, .input-group textarea { 
+            width: 100%; padding: 14px 14px 14px 45px; 
+            border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; font-size: 14px; outline: none; 
+            background: rgba(0,0,0,0.2); color: white; backdrop-filter: blur(5px);
+        }
+        .input-group input::placeholder, .input-group textarea::placeholder { color: rgba(255,255,255,0.5); }
+        .submit-btn { width: 100%; background: #4ae0c0; color: #021215; border: none; padding: 15px; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; transition: 0.3s; margin-top: 10px; }
+        .submit-btn:hover { background: #fff; box-shadow: 0 0 20px rgba(74, 224, 192, 0.4); }
+
+        /* --- FOOTER --- */
+        .footer-section { margin-top: 60px; padding: 40px 20px; text-align: center; border-top: 1px solid var(--glass-border); background: rgba(0,0,0,0.2); backdrop-filter: blur(10px); }
+        .social-icons { display: flex; justify-content: center; gap: 20px; margin-bottom: 20px; }
+        .social-icons a { 
+            display: flex; justify-content: center; align-items: center;
+            width: 50px; height: 50px; border-radius: 50%; 
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); 
+            color: white; font-size: 22px; transition: 0.3s; backdrop-filter: blur(5px);
+        }
+        .social-icons a:hover { background: rgba(255,255,255,0.2); transform: translateY(-3px); }
+        .copyright { font-size: 14px; opacity: 0.6; letter-spacing: 1px; }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-content">
+            <div class="menu-icon" onclick="toggleMenu()">
+                <i class="fas fa-bars"></i>
+            </div>
+            
+            <div class="search-container">
+                <input type="text" id="searchInput" class="search-box" placeholder="Search products..." autocomplete="off">
+                <i class="fas fa-search search-icon"></i>
+                <div id="suggestionsBox" class="suggestions-glass"></div>
+            </div>
+
+            <div class="brand">
+                <h1 class="brand-name">METASO</h1>
+                <img src="IMG_4849.jpeg" alt="METASO" class="brand-logo" onerror="this.src='https://via.placeholder.com/50/063F47/FFFFFF?text=M'">
+            </div>
+        </div>
+    </nav>
+
+    <!-- Left Menu -->
+    <div class="side-menu" id="side-menu">
+        <div class="menu-header">
+            <h2 style="font-family: 'Cinzel', serif; letter-spacing: 1px;">METASO</h2>
+            <i class="fas fa-times close-menu" onclick="toggleMenu()"></i>
+        </div>
+        <ul class="menu-links">
+            <li><a href="#home" onclick="toggleMenu()"><i class="fas fa-home"></i> Home</a></li>
+            <li><a href="#products" onclick="toggleMenu()"><i class="fas fa-box"></i> Products</a></li>
+        </ul>
+    </div>
+    <div class="menu-overlay" id="menu-overlay" onclick="toggleMenu()"></div>
+
+    <!-- Hero / Title Area -->
+    <header class="hero" id="home">
+        <h2>METASO</h2>
+        <p>PREMIUM EXCLUSIVES</p>
+    </header>
+
+    <!-- Product Grid -->
+    <main class="container" id="products">
+        <div class="product-grid" id="product-grid"></div>
+    </main>
+
+    <!-- Footer / Contact -->
+    <footer class="footer-section">
+        <div class="social-icons">
+            <a href="https://instagram.com/metasoco" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="mailto:a.tasin@icloud.com" title="Email Us"><i class="fas fa-envelope"></i></a>
+        </div>
+        <p class="copyright">METASOCO/tsblhsn.bd</p>
+    </footer>
+
+    <!-- Checkout Modal -->
+    <div class="modal-overlay" id="checkout-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-shopping-bag"></i> Checkout</h3>
+                <button class="close-btn" onclick="closeModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div id="modal-body">
+                <div style="margin-bottom: 20px;">
+                    <h4 id="checkout-product-name" style="margin-bottom: 5px;">Product Name</h4>
+                    <p style="color: #4ae0c0; font-weight: bold;"><span id="total-price">0</span> ৳</p>
+                </div>
+                <form id="order-form" onsubmit="processOrder(event)">
+                    <div class="input-group">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="customer-name" placeholder="Full Name" required>
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-phone"></i>
+                        <input type="tel" id="customer-phone" placeholder="Phone Number" required>
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <textarea id="customer-address" rows="3" placeholder="Full Delivery Address" required></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn" id="submit-btn">
+                        <span>Confirm Order</span> <i class="fas fa-check-circle"></i>
+                    </button>
+                </form>
+            </div>
+            <div id="success-screen" style="display: none; text-align: center; padding: 20px 0;">
+                <i class="fas fa-check-circle" style="font-size: 60px; color: #4ae0c0; margin-bottom: 15px;"></i>
+                <h2>Order Confirmed!</h2>
+                <p style="color: var(--text-light); margin-top: 10px;">Your premium order has been placed successfully.</p>
+                <button onclick="closeModal()" style="margin-top:20px; padding: 10px 20px; border-radius: 10px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; cursor: pointer;">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Data updated to support search tests (T-shirt, Tie, etc)
+        const products = [
+            { id: 1, name: "Premium Black Hoodie", price: 600, image: "18730902853_693372066.jpeg", desc: "Premium quality black hoodie. Perfect for winter." },
+            { id: 2, name: "Stylish Green Hoodie", price: 800, image: "O1CN01OkkvsG2EzKPKpLRQN_!!2218760308815-0-cib.jpeg", desc: "Awesome stylish green hoodie. Soft and comfortable." },
+            { id: 3, name: "Luxury Silk Tie", price: 1200, image: "https://via.placeholder.com/300/063F47/FFFFFF?text=Tie", desc: "Premium Italian silk tie." },
+            { id: 4, name: "Classic White T-Shirt", price: 500, image: "https://via.placeholder.com/300/063F47/FFFFFF?text=T-Shirt", desc: "100% cotton premium T-shirts." },
+            { id: 5, name: "Color Wow Dream Coat", price: 2300, image: "51i84VRdudL._SL1000_.jpeg", desc: "Magical formula to make hair silky." }
+        ];
+
+        const productGrid = document.getElementById('product-grid');
+
+        // Render Products
+        function renderProducts(items) {
+            productGrid.innerHTML = '';
+            if(items.length === 0) {
+                productGrid.innerHTML = '<p style="text-align:center; width:100%; color:#e2e8f0;">No products found.</p>';
+                return;
+            }
+            items.forEach(product => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <img src="${product.image}" alt="${product.name}" class="product-image" onerror="this.src='https://via.placeholder.com/300/063F47/FFFFFF?text=METASO'">
+                    <div class="product-info">
+                        <h3 class="product-title">${product.name}</h3>
+                        <p class="product-desc">${product.desc}</p>
+                        <div class="price-row">
+                            <span class="product-price">${product.price} ৳</span>
+                        </div>
+                        <button class="order-btn" onclick="openModal(${product.id})">Order Now <i class="fas fa-arrow-right"></i></button>
+                    </div>
+                `;
+                productGrid.appendChild(card);
+            });
+        }
+        
+        // Initial Render
+        renderProducts(products);
+
+        // Advanced Search & Auto-Suggestion System
+        const searchInput = document.getElementById('searchInput');
+        const suggestionsBox = document.getElementById('suggestionsBox');
+
+        searchInput.addEventListener('input', function(e) {
+            const val = e.target.value.toLowerCase().trim();
+            suggestionsBox.innerHTML = '';
+            
+            if (val.length > 0) {
+                const matches = products.filter(p => p.name.toLowerCase().includes(val) || p.desc.toLowerCase().includes(val));
+                
+                if (matches.length > 0) {
+                    suggestionsBox.classList.add('active');
+                    matches.forEach(match => {
+                        const div = document.createElement('div');
+                        div.className = 'suggestion-item';
+                        div.innerHTML = `<i class="fas fa-search"></i> ${match.name}`;
+                        div.onclick = () => {
+                            searchInput.value = match.name;
+                            suggestionsBox.classList.remove('active');
+                            renderProducts([match]);
+                        };
+                        suggestionsBox.appendChild(div);
+                    });
+                } else {
+                    suggestionsBox.classList.remove('active');
+                }
+                renderProducts(matches);
+            } else {
+                suggestionsBox.classList.remove('active');
+                renderProducts(products);
+            }
+        });
+
+        // Close suggestions when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!searchInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
+                suggestionsBox.classList.remove('active');
+            }
+        });
+
+        // Left Menu Toggle
+        function toggleMenu() {
+            document.getElementById('side-menu').classList.toggle('active');
+            document.getElementById('menu-overlay').classList.toggle('active');
+        }
+
+        // Modal Functions
+        let currentProduct = null;
+        const modal = document.getElementById('checkout-modal');
+
+        function openModal(productId) {
+            currentProduct = products.find(p => p.id === productId);
+            document.getElementById('checkout-product-name').innerText = currentProduct.name;
+            document.getElementById('total-price').innerText = currentProduct.price;
+            document.getElementById('modal-body').style.display = 'block';
+            document.getElementById('success-screen').style.display = 'none';
+            document.getElementById('order-form').reset();
+            modal.classList.add('active');
+        }
+
+        function closeModal() { modal.classList.remove('active'); }
+
+        // Order Process
+        function processOrder(e) {
+            e.preventDefault(); 
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            submitBtn.disabled = true;
+
+            const orderData = {
+                product_name: currentProduct.name,
+                total_price: currentProduct.price,
+                customer_name: document.getElementById('customer-name').value,
+                customer_phone: document.getElementById('customer-phone').value,
+                customer_address: document.getElementById('customer-address').value
+            };
+
+            emailjs.send('service_n9sopis', 'template_8t9gx5f', orderData)
+                .then(function() {
+                    document.getElementById('modal-body').style.display = 'none';
+                    document.getElementById('success-screen').style.display = 'block';
+                    submitBtn.innerHTML = '<span>Confirm Order</span> <i class="fas fa-check-circle"></i>';
+                    submitBtn.disabled = false;
+                }, function(error) {
+                    alert("Error: " + JSON.stringify(error));
+                    submitBtn.innerHTML = '<span>Confirm Order</span> <i class="fas fa-check-circle"></i>';
+                    submitBtn.disabled = false;
+                });
+        }
+    </script>
+</body>
+</html>
